@@ -58,7 +58,7 @@ def main(topic):
 
     json_deserializer = JSONDeserializer(latest_schema_value,from_dict = Restaurant.dicttoresto)
     consumer_conf = sasl_conf()
-    consumer_conf.update({'group.id' : 'group2', 'auto.offset.reset':'earliest' })
+    consumer_conf.update({'group.id' : 'group1', 'auto.offset.reset':'earliest' })
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
     while True:
@@ -78,6 +78,8 @@ def main(topic):
     consumer.close()
 
     print("Number of records consumed by consumer 2 : {}".format(len(restaurants)))
+    #Number of records consumed by consumer 2 : 74818 (with different group id) 
+    #Number of records consumed by consumer 2 : 49966 (with same group id)
     
 
 

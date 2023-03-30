@@ -78,6 +78,8 @@ def main(topic):
     consumer.close()
 
     print("Number of records consumed by consumer 1 : {}".format(len(restaurants)))
+    #Number of records consumed by consumer 1 : 74818 (with diff group id) 
+    #Number of records consumed by consumer 1 : 24852 (with same group id)
     
 
 
