@@ -61,6 +61,7 @@ def main(topic):
     consumer_conf.update({'group.id' : 'group1', 'auto.offset.reset':'earliest' })
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
+    consumed_partitions = set()
     while True:
         try:
             msg = consumer.poll(1.0)
@@ -70,16 +71,21 @@ def main(topic):
             resto = json_deserializer(msg.value(),SerializationContext(msg.topic,MessageField.VALUE))
 
             if resto is not None:
-                print("User record {}: Restaurant: {}\n".format(msg.key(),resto))
+                print("User record {}: Restaurant: {} consumed from Partition {}\n".format(msg.key(),resto,msg.partition()))
                 restaurants.append(resto)
+                consumed_partitions.add(msg.partition())
 
         except KeyboardInterrupt:
             break
     consumer.close()
 
     print("Number of records consumed by consumer 1 : {}".format(len(restaurants)))
-    #Number of records consumed by consumer 1 : 74818 (with diff group id) 
-    #Number of records consumed by consumer 1 : 24852 (with same group id)
+    print("Partitions consumed by consumer are : {}".format(consumed_partitions))
+    #Number of records consumed by consumer 1 : 74818 (with diff group id)
+    #Partitions consumed by consumer are : {0, 1, 2}
+     
+    #Number of records consumed by consumer 1 : 31783 (with same group id)
+    #Partitions consumed by consumer are : {2} (with same group id)
     
 
 

@@ -58,9 +58,10 @@ def main(topic):
 
     json_deserializer = JSONDeserializer(latest_schema_value,from_dict = Restaurant.dicttoresto)
     consumer_conf = sasl_conf()
-    consumer_conf.update({'group.id' : 'group1', 'auto.offset.reset':'earliest' })
+    consumer_conf.update({'group.id' : 'group2', 'auto.offset.reset':'earliest' })
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
+    consumed_partitions = set()
     while True:
         try:
             msg = consumer.poll(1.0)
@@ -72,14 +73,19 @@ def main(topic):
             if resto is not None:
                 print("User record {}: Restaurant: {}\n".format(msg.key(),resto))
                 restaurants.append(resto)
+                consumed_partitions.add(msg.partition())
 
         except KeyboardInterrupt:
             break
     consumer.close()
 
     print("Number of records consumed by consumer 2 : {}".format(len(restaurants)))
-    #Number of records consumed by consumer 2 : 74818 (with different group id) 
-    #Number of records consumed by consumer 2 : 49966 (with same group id)
+    print("Partitions consumed by consumer are : {}".format(consumed_partitions))
+    #Number of records consumed by consumer 2 : 74818 (with different group id)
+    #Partitions consumed by consumer are : {0, 1, 2}
+     
+    #Number of records consumed by consumer 2 : 63074 (with same group id)
+    #Partitions consumed by consumer are : {0,1} (with same group id)
     
 
 
